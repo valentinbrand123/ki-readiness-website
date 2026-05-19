@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automatisierung im Mittelstand — Erste Ergebnisse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a1a18;--ink-s:#4a4a46;--ink-f:#9a9a94;
+  --paper:#f7f5ef;--warm:#ede9df;
+  --red:#c8401a;
+  --serif:'Libre Baskerville',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:17px;line-height:1.65;
+  overflow-x:hidden;
+}
+
+/* NAV — sehr dezent */
+nav{
+  padding:20px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{
+  font-family:var(--serif);font-size:13px;color:var(--ink-f);
+}
+.nav-meta{
+  font-size:11px;color:var(--ink-f);letter-spacing:.04em;
+}
+
+/* HERO — keine große Lücke, direkt zum Punkt */
+.hero{
+  padding:40px 60px 72px;
+  border-bottom:1px solid rgba(26,26,24,.08);
+  position:relative;
+}
+.hero-line{
+  position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:var(--red);
+}
+.hero-eye{
+  font-size:11px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--red);
+  margin-bottom:20px;
+}
+h1{
+  font-family:var(--serif);
+  font-size:clamp(34px,4.5vw,62px);
+  line-height:1.1;letter-spacing:-.025em;
+  margin-bottom:24px;max-width:760px;
+}
+h1 em{font-style:italic;color:var(--red)}
+.hero-sub{
+  font-size:17px;font-weight:300;color:var(--ink-s);
+  max-width:560px;line-height:1.65;margin-bottom:40px;
+}
+.hero-stats{
+  display:flex;gap:48px;flex-wrap:wrap;
+}
+.stat-n{
+  font-family:var(--serif);font-size:28px;font-weight:700;
+  color:var(--ink);line-height:1;margin-bottom:3px;
+}
+.stat-l{font-size:11px;color:var(--ink-f);letter-spacing:.04em}
+
+/* THESIS */
+.thesis{
+  background:var(--ink);color:var(--paper);
+  padding:60px;
+}
+.t-label{
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(247,245,239,.3);margin-bottom:18px;
+}
+.t-text{
+  font-family:var(--serif);
+  font-size:clamp(20px,2.5vw,32px);
+  line-height:1.35;letter-spacing:-.01em;
+  max-width:760px;margin-bottom:24px;
+}
+.t-text em{font-style:italic;color:#e8a080}
+.t-author{font-size:12px;color:rgba(247,245,239,.3)}
+
+/* PROFILES */
+.profiles{padding:72px 60px}
+.profiles-intro{margin-bottom:48px;max-width:560px}
+.p-q{
+  font-family:var(--serif);
+  font-size:clamp(24px,3vw,38px);
+  line-height:1.2;letter-spacing:-.02em;margin-bottom:10px;
+}
+.p-hint{font-size:14px;color:var(--ink-f)}
+
+.p-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:2px;background:rgba(26,26,24,.07);
+  border-radius:2px;overflow:hidden;
+}
+.p-card{
+  background:var(--paper);padding:40px 36px;
+  cursor:pointer;transition:background .2s;
+  position:relative;
+}
+.p-card:hover{background:var(--warm)}
+.p-card.open{background:var(--ink);color:var(--paper)}
+.p-num{
+  font-family:var(--serif);font-size:48px;line-height:1;
+  color:var(--warm);margin-bottom:16px;transition:color .2s;
+}
+.p-card.open .p-num{color:rgba(247,245,239,.08)}
+.p-tag{
+  font-size:10px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:8px;color:var(--red);
+}
+.p-card.open .p-tag{color:rgba(247,245,239,.4)}
+.p-name{
+  font-family:var(--serif);font-size:19px;line-height:1.2;
+  margin-bottom:8px;
+}
+.p-context{font-size:12px;color:var(--ink-f);margin-bottom:18px}
+.p-card.open .p-context{color:rgba(247,245,239,.3)}
+.p-traits{list-style:none}
+.p-traits li{
+  font-size:13px;color:var(--ink-s);
+  padding:7px 0;border-bottom:1px solid var(--warm);
+  display:flex;gap:10px;line-height:1.4;
+}
+.p-card.open .p-traits li{
+  color:rgba(247,245,239,.6);
+  border-color:rgba(247,245,239,.07);
+}
+.p-traits li:last-child{border-bottom:none}
+.p-arrow{
+  font-size:11px;color:var(--ink-f);margin-top:16px;
+  transition:opacity .2s;
+}
+.p-card.open .p-arrow{opacity:0}
+
+/* Detail */
+.p-detail{
+  display:none;
+  background:rgba(200,64,26,.06);
+  border-top:2px solid var(--red);
+  padding:44px 60px;
+  grid-column:1/-1;
+}
+.p-detail.open{display:block}
+.p-steps-label{
+  font-size:10px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--red);margin-bottom:28px;
+}
+.p-steps-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:32px;max-width:880px;
+}
+.step-n{
+  font-family:var(--serif);font-size:40px;line-height:1;
+  color:rgba(200,64,26,.12);margin-bottom:8px;
+}
+.step-t{
+  font-size:14px;font-weight:500;color:var(--ink);
+  margin-bottom:6px;line-height:1.35;
+}
+.step-b{font-size:13px;color:var(--ink-s);line-height:1.6}
+.step-c{
+  font-size:11px;color:var(--red);font-style:italic;
+  margin-top:8px;
+}
+
+/* FINDINGS — kompakt, kein Overkill */
+.findings{
+  background:var(--warm);
+  padding:72px 60px;
+}
+.findings-inner{max-width:880px;margin:0 auto}
+.sec-label{
+  font-size:10px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-f);margin-bottom:10px;
+}
+.sec-title{
+  font-family:var(--serif);
+  font-size:clamp(26px,3vw,40px);
+  line-height:1.15;letter-spacing:-.02em;margin-bottom:12px;
+}
+.sec-rule{width:36px;height:2px;background:var(--red);margin:20px 0 36px}
+
+.f-list{display:flex;flex-direction:column;gap:0}
+.f-item{
+  display:grid;grid-template-columns:52px 1fr;
+  padding:32px 0;border-top:1px solid rgba(26,26,24,.1);
+  cursor:pointer;
+}
+.f-item:last-child{border-bottom:1px solid rgba(26,26,24,.1)}
+.f-item:hover .f-title{color:var(--red)}
+.f-num{
+  font-family:var(--serif);font-size:12px;
+  color:var(--ink-f);padding-top:5px;
+}
+.f-title{
+  font-family:var(--serif);
+  font-size:clamp(18px,2vw,26px);
+  line-height:1.2;letter-spacing:-.01em;
+  margin-bottom:10px;transition:color .2s;
+}
+.f-desc{
+  font-size:14px;color:var(--ink-s);
+  line-height:1.65;max-width:580px;
+}
+.f-detail{
+  max-height:0;overflow:hidden;
+  transition:max-height .45s ease;
+}
+.f-detail.open{max-height:300px}
+.f-detail-in{
+  padding:18px 0 0;margin-top:12px;
+  border-top:1px solid rgba(26,26,24,.1);
+}
+.layers{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.layer{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center}
+.ll{font-size:11px;color:var(--ink-s)}
+.lb{height:20px;background:rgba(26,26,24,.06);border-radius:3px;overflow:hidden}
+.lb-f{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:10px;font-size:10px;font-weight:500}
+.f-src{font-size:11px;color:var(--ink-f)}
+
+/* QUOTES — nur vier, sehr knapp */
+.quotes{
+  background:var(--ink);color:var(--paper);
+  padding:72px 60px;
+}
+.q-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:24px;margin-top:44px;
+}
+.q-card{border-top:2px solid;padding-top:20px}
+.q-card:nth-child(1){border-color:#c87050}
+.q-card:nth-child(2){border-color:#c87050}
+.q-card:nth-child(3){border-color:#7aa8d8}
+.q-card:nth-child(4){border-color:#7aa8d8}
+.q-text{
+  font-family:var(--serif);font-size:15px;
+  line-height:1.65;color:rgba(247,245,239,.88);
+  font-style:italic;margin-bottom:10px;
+}
+.q-note{font-size:12px;color:rgba(247,245,239,.45);line-height:1.5}
+.q-src{font-size:10px;color:rgba(247,245,239,.2);margin-top:5px}
+
+/* FOOTER — sehr dezent */
+.foot{
+  padding:40px 60px;
+  border-top:1px solid rgba(26,26,24,.07);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:16px;
+}
+.foot-text{font-size:12px;color:var(--ink-f);line-height:1.6;max-width:680px}
+.foot-name{font-family:var(--serif);font-size:13px;color:var(--ink-s)}
+
+/* FADE — mit no-JS Fallback */
+.js .fu{
+  opacity:0;transform:translateY(20px);
+  transition:opacity .6s ease,transform .6s ease;
+}
+.js .fu.v{opacity:1;transform:none}
+
+/* TABLET */
+@media(max-width:1024px){
+  .hero,.profiles,.findings,.quotes,.foot{padding-left:40px;padding-right:40px}
+  .thesis{padding:52px 40px}
+  .p-detail{padding:36px 40px}
+  .p-steps-grid{gap:24px}
+  h1{font-size:clamp(30px,4vw,52px)}
+}
+
+/* MOBILE */
+@media(max-width:768px){
+  nav{padding:14px 20px}
+  .nav-meta{display:none}
+  .hero,.profiles,.findings,.quotes,.foot{padding-left:20px;padding-right:20px}
+  .thesis{padding:44px 20px}
+  h1{font-size:clamp(26px,7vw,36px);line-height:1.15}
+  .hero-sub{font-size:15px}
+  .hero-stats{gap:24px}
+  .stat-n{font-size:24px}
+
+  /* Profile: stack + detail direkt nach jeder karte */
+  .p-grid{
+    display:flex;flex-direction:column;
+    background:transparent;gap:2px;
+  }
+  .p-card{padding:28px 20px}
+  .p-num{font-size:36px}
+  .p-detail{
+    padding:28px 20px;
+    grid-column:auto;
+  }
+  .p-steps-grid{grid-template-columns:1fr;gap:20px}
+
+  /* Findings */
+  .f-item{grid-template-columns:1fr;padding:24px 0}
+  .f-num{display:none}
+  .f-detail{max-height:0}
+  .f-detail.open{max-height:600px}
+  .layer{grid-template-columns:90px 1fr}
+
+  /* Quotes */
+  .q-grid{grid-template-columns:1fr;gap:20px}
+
+  /* Footer */
+  .foot{flex-direction:column;align-items:flex-start;padding:32px 20px}
+}
+
+/* SMALL MOBILE */
+@media(max-width:400px){
+  h1{font-size:26px}
+  .hero-eye{font-size:10px}
+  .p-name{font-size:17px}
+  .stat-n{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV — sehr dezent -->
+<nav>
+  <span class="nav-brand">Valentin Brand · TU München · 2026</span>
+  <span class="nav-meta">Masterarbeit · Lehrstuhl IWB</span>
+</nav>
+
+<!-- HERO — direkt, keine große Lücke -->
+<div class="hero fu">
+  <div class="hero-line"></div>
+  <div class="hero-eye">Erste Ergebnisse · 11 Interviews · DACH-Raum</div>
+  <h1>Was hält produzierende<br>Mittelständler davon ab,<br><em>zu automatisieren?</em></h1>
+  <p class="hero-sub">
+    11 Gespräche mit Geschäftsführern, IT-Beratern und Plattformanbietern.
+    Hier sind die ersten Befunde — und was sie für Ihr Unternehmen bedeuten.
+  </p>
+  <div class="hero-stats">
+    <div>
+      <div class="stat-n">11</div>
+      <div class="stat-l">Interviews</div>
+    </div>
+    <div>
+      <div class="stat-n">Jan–Mai</div>
+      <div class="stat-l">2026</div>
+    </div>
+    <div>
+      <div class="stat-n">DACH</div>
+      <div class="stat-l">Raum</div>
+    </div>
+  </div>
+</div>
+
+<!-- THESIS -->
+<div class="thesis fu">
+  <div class="t-label">Zentraler Befund</div>
+  <p class="t-text">
+    Wissen, Daten und Systeme müssen in einer <em>spezifischen Form</em>
+    vorliegen — erst dann ist sinnvolle Automatisierung möglich.
+    Der erste Schritt ist fast nie künstliche Intelligenz.
+  </p>
+  <div class="t-author">
+    Valentin Brand · Masterarbeit · Lehrstuhl IWB · TU München
+    · Betreuerin: Prof. Dr. Christina Reuter
+  </div>
+</div>
+
+<!-- PROFILES — zuerst -->
+<div class="profiles">
+  <div class="profiles-intro fu">
+    <h2 class="p-q">Welches Unternehmen sind Sie?</h2>
+    <p class="p-hint">Klicken Sie auf Ihr Profil — und sehen Sie, was für Sie konkret als nächstes sinnvoll ist.</p>
+  </div>
+
+  <div class="p-grid fu">
+
+    <div class="p-card" onclick="openP(1,this)">
+      <div class="p-num">01</div>
+      <div class="p-tag">Organisch gewachsen</div>
+      <h3 class="p-name">Pragmatisch aufgestellter Betrieb</h3>
+      <div class="p-context">Anlagenbau · Stahl · Handwerk · bis 50 Mio.</div>
+      <ul class="p-traits">
+        <li>+ Schnelle Entscheidungen, flexible Strukturen</li>
+        <li>+ Prozesswissen sitzt im Team</li>
+        <li>~ IT noch nicht konsolidiert</li>
+        <li>~ Daten überwiegend in Excel</li>
+      </ul>
+      <div class="p-arrow">Nächste Schritte anzeigen ↓</div>
+    </div>
+
+    <div class="p-card" onclick="openP(2,this)">
+      <div class="p-num">02</div>
+      <div class="p-tag">Formal strukturiert</div>
+      <h3 class="p-name">Etablierter Mittelständler</h3>
+      <div class="p-context">Industrie · Pharma · Handel · 30–200 Mio.</div>
+      <ul class="p-traits">
+        <li>+ ISO-Zertifizierung, ERP vorhanden</li>
+        <li>+ Datenstrukturen weitgehend digital</li>
+        <li>~ Spielregeln für Entscheidungen undokumentiert</li>
+        <li>~ Automatisierungs-Know-how hängt an Einzelpersonen</li>
+      </ul>
+      <div class="p-arrow">Nächste Schritte anzeigen ↓</div>
+    </div>
+
+    <div class="p-card" onclick="openP(3,this)">
+      <div class="p-num">03</div>
+      <div class="p-tag">Aktiv automatisierend</div>
+      <h3 class="p-name">Fortgeschrittener Implementierer</h3>
+      <div class="p-context">Pharma · TGA · Tech · ab 20 Mio.</div>
+      <ul class="p-traits">
+        <li>+ Regelbasierte Prozesse laufen automatisch</li>
+        <li>+ Daten und Schnittstellen aufgeräumt</li>
+        <li>+ Spielregeln intern dokumentiert</li>
+        <li>→ Nächste Stufe: Ausnahmen mit LLM behandeln</li>
+      </ul>
+      <div class="p-arrow">Nächste Schritte anzeigen ↓</div>
+    </div>
+
+    <!-- Details -->
+    <div class="p-detail" id="pd1">
+      <div class="p-steps-label">Ihr konkreter nächster Schritt</div>
+      <div class="p-steps-grid">
+        <div>
+          <div class="step-n">1</div>
+          <div class="step-t">Den lästigsten Prozess wählen — nicht den wichtigsten.</div>
+          <div class="step-b">Hohe Fehlerquote, wiederkehrend, manuell. Automatisierung zwingt zur Formalisierung automatisch mit — das ist der Nebeneffekt.</div>
+          <div class="step-c">Fast immer möglich ohne aufgeräumte IT-Infrastruktur.</div>
+        </div>
+        <div>
+          <div class="step-n">2</div>
+          <div class="step-t">Fragen Sie: Kann ich programmatisch auf meine Daten zugreifen?</div>
+          <div class="step-b">Die Anzahl der Systeme ist nicht das Problem. Ob Sie über eine Schnittstelle auf Ihre eigenen Daten können — das ist es.</div>
+          <div class="step-c">„Nicht nur als Exportdatei — sondern über eine nutzbare Schnittstelle?"</div>
+        </div>
+        <div>
+          <div class="step-n">3</div>
+          <div class="step-t">Zeigen Sie zuerst, was automatisiert wird — nicht was sich verändert.</div>
+          <div class="step-b">Mitarbeiter akzeptieren Systeme, die ihnen Arbeit abnehmen. Erst das Lästige automatisieren, dann das Strategische.</div>
+          <div class="step-c">Besuchsbericht in 3 Minuten statt 30 überzeugt schneller als jede Präsentation.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-detail" id="pd2">
+      <div class="p-steps-label">Ihr konkreter nächster Schritt</div>
+      <div class="p-steps-grid">
+        <div>
+          <div class="step-n">1</div>
+          <div class="step-t">Schreiben Sie Ihre 5 wichtigsten Kennzahlen auf — je in einem Satz definiert.</div>
+          <div class="step-b">Automatisierung kann Daten lesen, aber nicht wissen was sie bedeuten. Ohne Spielregeln entstehen falsche Ergebnisse trotz vollständiger Datenlage.</div>
+          <div class="step-c">Haben Vertrieb und Produktion dieselbe Definition von „Liefertreue"?</div>
+        </div>
+        <div>
+          <div class="step-n">2</div>
+          <div class="step-t">Was passiert, wenn Ihre Automatisierungsperson morgen kündigt?</div>
+          <div class="step-b">In 5 von 11 Interviews hängt das gesamte Know-how an einer einzigen Person. Wenn sie geht, geht es mit.</div>
+          <div class="step-c">Welche Tools laufen? Wer hat Zugang? Gibt es Dokumentation?</div>
+        </div>
+        <div>
+          <div class="step-n">3</div>
+          <div class="step-t">Prüfen Sie Ihre Stammdaten — nicht Ihre Bewegungsdaten.</div>
+          <div class="step-b">Kunden- und Lieferantendaten aktuell und konsistent? In 11 von 11 Interviews war das das zweite große Datenproblem.</div>
+          <div class="step-c">Lassen Sie zwei Abteilungen unabhängig Ihre Top-10-Kunden listen.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-detail" id="pd3">
+      <div class="p-steps-label">Ihr konkreter nächster Schritt</div>
+      <div class="p-steps-grid">
+        <div>
+          <div class="step-n">1</div>
+          <div class="step-t">Lassen Sie Ihre automatisierten Prozesse Protokoll schreiben.</div>
+          <div class="step-b">Logs sind nicht nur Kontrollinstrument — sie zeigen wo Regeln nicht ausreichen und wo ein LLM tatsächlich Sinn macht.</div>
+          <div class="step-c">Was entscheidet der Prozess gerade noch falsch — weil eine Regel fehlt?</div>
+        </div>
+        <div>
+          <div class="step-n">2</div>
+          <div class="step-t">Definieren Sie: Wo darf das System entscheiden — und wo nicht?</div>
+          <div class="step-b">80% eines Workflows sind deterministisch — klassische Regelautomatisierung. Nur die verbleibenden 20% brauchen einen echten LLM-Check.</div>
+          <div class="step-c">Kein automatischer Output bei kritischen Prozessen ohne menschliche Freigabe.</div>
+        </div>
+        <div>
+          <div class="step-n">3</div>
+          <div class="step-t">Evaluieren Sie eine Integrationsschicht — statt das nächste Gesamtsystem.</div>
+          <div class="step-b">Spezialisierte Tools mit einer gemeinsamen Verbindungsschicht schlagen monolithische Systeme in Flexibilität und Tempo.</div>
+          <div class="step-c">Welche Systeme haben heute nutzbare Schnittstellen? Das ist Ihre Startliste.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FINDINGS — kompakt -->
+<div class="findings">
+  <div class="findings-inner">
+    <div class="fu">
+      <div class="sec-label">Was die Interviews zeigen</div>
+      <h2 class="sec-title">Vier Befunde — in allen 11 Gesprächen bestätigt</h2>
+      <div class="sec-rule"></div>
+    </div>
+
+    <div class="f-list fu">
+
+      <div class="f-item" onclick="toggleF('fd1')">
+        <div class="f-num">01</div>
+        <div>
+          <h3 class="f-title">Wissen ist da — aber nicht maschinenlesbar.</h3>
+          <p class="f-desc">Erfahrungen sitzen in Köpfen. Entscheidungsregeln sind nie aufgeschrieben. Das Ergebnis: Automatisierung liefert bei vollständigen Daten trotzdem falsche Ergebnisse — weil der Kontext fehlt.</p>
+          <div class="f-detail" id="fd1">
+            <div class="f-detail-in">
+              <div class="layers">
+                <div class="layer"><div class="ll">Erfahrungswissen</div><div class="lb"><div class="lb-f" style="width:100%;background:#f0d4c8;color:#7a2010;">sitzt in Köpfen — schrittweise erschließbar</div></div></div>
+                <div class="layer"><div class="ll">Kennzahlen &amp; Regeln</div><div class="lb"><div class="lb-f" style="width:62%;background:#c8e8d8;color:#1a5a38;">dokumentierbar — wird fast immer vergessen</div></div></div>
+              </div>
+              <div class="f-src">Alle 11 Interviews · IP-01, IP-02, IP-03, IP-05, IP-06, IP-07, IP-09</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="f-item" onclick="toggleF('fd2')">
+        <div class="f-num">02</div>
+        <div>
+          <h3 class="f-title">Datenqualität ist kein KMU-Problem — es ist universal.</h3>
+          <p class="f-desc">Selbst reife Großunternehmen kämpfen damit. Drei Schichten, drei verschiedene Ursachen — und drei verschiedene Lösungen.</p>
+          <div class="f-detail" id="fd2">
+            <div class="f-detail-in">
+              <div class="layers">
+                <div class="layer"><div class="ll">Vollständigkeit</div><div class="lb"><div class="lb-f" style="width:100%;background:#f0d4c8;color:#7a2010;">Sind Daten digital vorhanden? → IT-Problem</div></div></div>
+                <div class="layer"><div class="ll">Konsistenz</div><div class="lb"><div class="lb-f" style="width:80%;background:#f5e4c0;color:#6a4010;">Stammdaten aktuell? → Organisations-Problem</div></div></div>
+                <div class="layer"><div class="ll">Bedeutung</div><div class="lb"><div class="lb-f" style="width:62%;background:#c8e8d8;color:#1a5a38;">Was bedeuten sie? → Kommunikations-Problem</div></div></div>
+              </div>
+              <div class="f-src">Alle 11 Interviews · IP-01, IP-02, IP-03, IP-04, IP-07, IP-09, IP-11</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="f-item" onclick="toggleF('fd3')">
+        <div class="f-num">03</div>
+        <div>
+          <h3 class="f-title">Nicht die Systemanzahl blockiert. Fehlende Verbindungen tun es.</h3>
+          <p class="f-desc">Fünf verbundene Systeme schlagen zwei unverbundene. Die entscheidende Frage: Kann ich programmatisch auf meine eigenen Daten zugreifen?</p>
+          <div class="f-detail" id="fd3">
+            <div class="f-detail-in">
+              <div class="layers">
+                <div class="layer"><div class="ll">Ohne Schnittstelle</div><div class="lb"><div class="lb-f" style="width:100%;background:#f0d4c8;color:#7a2010;">echter Blocker</div></div></div>
+                <div class="layer"><div class="ll">Mit Schnittstelle</div><div class="lb"><div class="lb-f" style="width:42%;background:#c8e8d8;color:#1a5a38;">handhabbar</div></div></div>
+              </div>
+              <div class="f-src">Alle 11 Interviews · IP-02, IP-03, IP-04, IP-07, IP-08, IP-11</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="f-item" onclick="toggleF('fd4')">
+        <div class="f-num">04</div>
+        <div>
+          <h3 class="f-title">Der Blocker liegt fast nie in der Technik.</h3>
+          <p class="f-desc">DSGVO, Betriebsräte, politische Widerstände, Mitarbeiter die neue Tools ignorieren — das sind die echten Hindernisse. Ein funktionierender Prototyp ist heute in drei Tagen gebaut.</p>
+          <div class="f-detail" id="fd4">
+            <div class="f-detail-in">
+              <p style="font-size:13px;color:var(--ink-s);line-height:1.65;max-width:540px;margin-bottom:10px;">7 von 11 Interviews: Die Technologie war bereit — Menschen, Regulierung oder Organisation nicht.</p>
+              <div class="f-src">IP-01, IP-02, IP-03, IP-05, IP-07</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- QUOTES — vier, sehr knapp -->
+<div class="quotes">
+  <div style="max-width:840px;margin:0 auto">
+    <div class="fu">
+      <div class="sec-label" style="color:rgba(247,245,239,.25)">Aus den Interviews</div>
+      <h2 class="sec-title" style="color:var(--paper)">Was Gesprächspartner sagen</h2>
+      <div class="sec-rule"></div>
+    </div>
+    <div class="q-grid fu">
+      <div class="q-card">
+        <p class="q-text">„Ich habe schon Leute in Tränen ausbrechen sehen, weil das Tool nicht mehr einen Button oben links, sondern unten rechts hat."</p>
+        <div class="q-note">Automatisierungsprojekte scheitern selten an der Technik — fast immer an Menschen die nicht mitgenommen werden.</div>
+        <div class="q-src">IT-Berater · 15 Jahre Praxis · März 2026</div>
+      </div>
+      <div class="q-card">
+        <p class="q-text">„Den Prototypen hatten wir in drei Tagen gebaut — kein Problem, funktioniert. Dann kommt sofort das Thema DSGVO."</p>
+        <div class="q-note">Die technische Hürde ist heute in Tagen überwindbar. Die regulatorische und organisatorische nicht.</div>
+        <div class="q-src">GF IT-Beratung · April 2026</div>
+      </div>
+      <div class="q-card">
+        <p class="q-text">„80 Prozent eines Workflows sind deterministisch — klassische Regelautomatisierung, kein KI. Nur die 20 Prozent brauchen einen echten KI-Check."</p>
+        <div class="q-note">Der erste Schritt ist fast nie künstliche Intelligenz — sondern saubere Regelautomatisierung.</div>
+        <div class="q-src">Automatisierungsspezialist · Pharmaunternehmen · Januar 2026</div>
+      </div>
+      <div class="q-card">
+        <p class="q-text">„Komme ich an meine eigenen Daten ran — nicht nur über Exportdateien, sondern über nutzbare Schnittstellen?"</p>
+        <div class="q-note">Das ist die eine Frage, die man bei jedem neuen Tool stellen sollte.</div>
+        <div class="q-src">Tech Lead · No-Code-Plattformanbieter · Mai 2026</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER — dezent -->
+<div class="foot fu">
+  <div class="foot-text">
+    Basis: 11 Experteninterviews, DACH-Raum, Januar–Mai 2026.
+    Interviewpartner: GF produzierender KMU, IT-Berater, ERP-Integratoren,
+    Process-Mining- und No-Code-Plattformanbieter.
+    Methode: qualitative Inhaltsanalyse nach Mayring &amp; Fenzl (2019).
+    Masterarbeit am Lehrstuhl IWB, TU München.
+    Betreuerin: Prof. Dr. Christina Reuter.
+  </div>
+  <div class="foot-name">Valentin Brand · 2026</div>
+</div>
+
+<script>
+// JS-Klasse setzen für Fade-Fallback
+document.documentElement.classList.add('js');
+
+// Profile: Detail nach richtiger Karte einfügen auf Mobile
+let op=null;
+function openP(n,card){
+  const det=document.getElementById('pd'+n);
+  const isMobile=window.innerWidth<=768;
+
+  if(op===n){
+    det.classList.remove('open');
+    card.classList.remove('open');
+    if(isMobile && det.parentNode!==document.getElementById('p-grid-wrap'))
+      det.remove();
+    op=null;return;
+  }
+
+  // Vorherigen schließen
+  if(op){
+    const prev=document.getElementById('pd'+op);
+    prev.classList.remove('open');
+    document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('open'));
+    if(isMobile && prev.parentNode){
+      try{prev.parentNode.removeChild(prev)}catch(e){}
+    }
+  }
+
+  if(isMobile){
+    // Detail direkt nach der geklickten Karte einfügen
+    card.insertAdjacentElement('afterend',det);
+  }
+
+  det.classList.add('open');
+  card.classList.add('open');
+  op=n;
+  setTimeout(()=>det.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
+}
+
+function toggleF(id){
+  document.getElementById(id).classList.toggle('open')
+}
+
+// Fade-Observer
+const obs=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}
+  })
+},{threshold:.08});
+document.querySelectorAll('.fu').forEach(el=>obs.observe(el));
+
+// Resize: Details zurücksetzen wenn zwischen Mobile/Desktop gewechselt
+let lastMobile=window.innerWidth<=768;
+window.addEventListener('resize',()=>{
+  const isMobile=window.innerWidth<=768;
+  if(isMobile!==lastMobile){
+    lastMobile=isMobile;
+    if(op){
+      document.getElementById('pd'+op).classList.remove('open');
+      document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('open'));
+      op=null;
+    }
+  }
+});
+</script>
+</body>
+</html>
